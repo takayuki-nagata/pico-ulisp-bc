@@ -13,70 +13,70 @@ import re
 TEST_PATTERNS = [
     # 1. Atoms (literals) and basic operations
     ("42", "42"),
-    ("(1 + 2)", "3"),
-    ("(10 - 3)", "7"),
-    ("(4 * 5)", "20"),
-    ("(10 / 2)", "5"),
-    ("(10 % 3)", "1"),
+    ("1 + 2", "3"),
+    ("10 - 3", "7"),
+    ("4 * 5", "20"),
+    ("10 / 2", "5"),
+    ("10 % 3", "1"),
     
     # 2. Operator precedence (*, /, % have higher priority than +, -)
-    ("(1 + 2 * 3)", "7"),
-    ("(10 - 2 * 3 + 1)", "5"),
+    ("1 + 2 * 3", "7"),
+    ("10 - 2 * 3 + 1", "5"),
     
     # 3. Variable assignment and reference
-    ("(a = 10)", "10"),
-    ("(a + 5)", "15"),
+    ("a = 10", "10"),
+    ("a + 5", "15"),
     ("undefined_var", "0"), # Undefined variables output a warning and evaluate to 0
     
     # 4. Comparison operators
-    ("(5 == 5)", "t"),
-    ("(5 != 4)", "t"),
-    ("(3 < 4)", "t"),
-    ("(4 > 3)", "t"),
-    ("(3 <= 3)", "t"),
-    ("(5 >= 6)", "nil"),
+    ("5 == 5", "t"),
+    ("5 != 4", "t"),
+    ("3 < 4", "t"),
+    ("4 > 3", "t"),
+    ("3 <= 3", "t"),
+    ("5 >= 6", "nil"),
     
     # 5. Math functions (calling Lisp side functions)
-    ("(max 10 20)", "20"),
-    ("(min 10 20)", "10"),
-    ("(abs (0 - 5))", "5"),
+    ("max 10 20", "20"),
+    ("min 10 20", "10"),
+    ("abs (0 - 5)", "5"),
     
     # 6. Control flow: Block { ... }
-    ("( { (x = 1) (y = 2) (x + y) } )", "3"),
+    ("{ (x = 1) (y = 2) (x + y) }", "3"),
     
     # 7. Control flow: If
-    ("(if (1 < 2) 100 200)", "100"),
-    ("(if (2 < 1) 100 200)", "200"),
+    ("if (1 < 2) 100 200", "100"),
+    ("if (2 < 1) 100 200", "200"),
     
     # 8. Control flow: While
-    ("( { (i = 0) (while (i < 3) (i = i + 1)) i } )", "3"),
+    ("{ (i = 0) (while (i < 3) (i = i + 1)) i }", "3"),
     
     # 9. Parentheses unwrapping
-    ("(((100)))", "100"),
+    ("((100))", "100"),
 
     # 10. Edge case: Division by zero
-    ("(10 / 0)", "Error: '/' division by zero"), 
-    ("(10 % 0)", "division by zero"),
+    ("10 / 0", "Error: '/' division by zero"), 
+    ("10 % 0", "division by zero"),
 
     # 11. Edge case: Arithmetic with undefined variable (treated as 0)
-    ("(unknown_var_b + 5)", "5"),
+    ("unknown_var_b + 5", "5"),
 
     # 12. Edge case: Parsing with excessive whitespace
-    ("(   10    *    2   )", "20"),
+    ("   10    *    2   ", "20"),
 
     # 13. Edge case: Condition boundary values
-    ("(if 0 100 200)", "100"), # 0 is treated as true (t) in Lisp
-    ("(if (2 < 1) 100)", "nil"), # When there is no else clause
+    ("if 0 100 200", "100"), # 0 is treated as true (t) in Lisp
+    ("if (2 < 1) 100", "nil"), # When there is no else clause
 
     # 14. Edge case: while loop that never executes
-    ("( { (x = 10) (while (x < 0) (x = x + 1)) x } )", "10"),
+    ("{ (x = 10) (while (x < 0) (x = x + 1)) x }", "10"),
 
     # 15. Edge case: Empty block (adjust expected value according to implementation)
-    ("({ })", "nil"),
+    ("{ }", "nil"),
 
     # 16. Ans feature: Uses previous result
-    ("(10 + 20)", "30"),
-    ("(ans * 2)", "60"),
+    ("10 + 20", "30"),
+    ("ans * 2", "60"),
 ]
 
 def read_until(ser, prompt_pattern, timeout=5.0):

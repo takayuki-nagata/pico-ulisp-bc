@@ -4,7 +4,7 @@ A lightweight, infix-notation calculator DSL (Domain Specific Language) for [uLi
 This project is primarily created for the [ClockworkPi Picocalc](https://www.clockworkpi.com/picocalc).
 
 ## Features
-- A custom REPL for evaluating math expressions using familiar infix notation (e.g., `(1 + 2 * 3)`).
+- A custom REPL for evaluating math expressions using familiar infix notation (e.g., `1 + 2 * 3`).
 - Supports C/bc-style control flow: block statements (`{ ... }`), conditionals (`if`), and loops (`while`).
 - Direct access to uLisp's built-in math functions (`sin`, `cos`, `sqrt`, etc.).
 - Includes built-in math and physical constants (`pi`, `e`, `phi`, `c`, `g`, `h`).
@@ -14,8 +14,7 @@ This project is primarily created for the [ClockworkPi Picocalc](https://www.clo
 ## Differences from standard `bc`
 While this tool mimics the feel of `bc`, it is essentially a syntactic wrapper running inside uLisp. Please note the following differences:
 - **Precision**: Does not support arbitrary-precision arithmetic. It relies entirely on uLisp's native number types (standard integers/floats).
-- **Parentheses Required**: Because it relies on the Lisp `read` function, all top-level statements must be enclosed in parentheses. (e.g., `(a = 10)` instead of just `a = 10`).
-- **Strict Spacing**: Operators must be separated by spaces. `(1 + 2)` is valid, but `(1+2)` will be parsed as a single Lisp symbol and cause an error.
+- **Strict Spacing**: Operators must be separated by spaces. `1 + 2` is valid, but `1+2` will be parsed as a single Lisp symbol and cause an error.
 - **No Custom Functions**: Currently does not support defining user functions (`define f(x) { ... }`).
 
 ## Requirements
@@ -53,21 +52,21 @@ Built-in Constants:
   pi e phi c g h
 
 Syntax Examples:
-  Math   : (1 + 2 * 3)
-  Funcs  : (sqrt (16 + 9))
-  Assign : (a = 10 % 3)
-  Ans    : (ans * 2) ;; Uses previous result
-  Block  : ( { (x = 1) (y = 2) } )
-  If     : (if (x == 1) (print 9) (print 0))
-  While  : (while (x < 5) ( { (print x) (x = x + 1) } ))
+  Math   : 1 + 2 * 3
+  Funcs  : sqrt (16 + 9)
+  Assign : a = 10 % 3
+  Ans    : ans * 2 ;; Uses previous result
+  Block  : { (x = 1) (y = 2) }
+  If     : if (x == 1) (print 9) (print 0)
+  While  : while (x < 5) ( { (print x) (x = x + 1) } )
 
 Note: ALWAYS use spaces around operators! (e.g. 'a < 5')
 ===========================
-bc> (10 + 20)
+bc> 10 + 20
 30
-bc> (ans * 2)
+bc> ans * 2
 60
-bc> (if (1 < 2) (print 100))
+bc> if (1 < 2) (print 100)
 100
 bc> quit
 Bye!
