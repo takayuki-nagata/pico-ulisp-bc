@@ -75,7 +75,9 @@
                  (right (nthcdr (1+ idx) expr)))
             (cond
              ;; Variable assignment creates or updates a global variable
-             ((eq op '=)  (eval (list 'defvar (car left) (calc right))))
+             ((eq op '=)  (let ((val (calc right)))
+                            (eval (list 'defvar (car left) val))
+                            val))
              ;; Comparison and modulo operations
              ((eq op '==) (= (calc left) (calc right)))
              ((eq op '!=) (not (= (calc left) (calc right))))
