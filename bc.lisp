@@ -47,7 +47,7 @@
    ((eq (car expr) 'if)
     (if (calc (cadr expr))
         (calc (caddr expr))
-      (when (cadddr expr) (calc (cadddr expr)))))
+      (when (cdr (cdr (cdr expr))) (calc (car (cdr (cdr (cdr expr))))))))
    ;; Evaluate 'while' loops: (while condition body)
    ((eq (car expr) 'while)
     (loop
