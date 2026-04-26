@@ -57,7 +57,7 @@ Syntax Examples:
   Assign : a = 10 % 3
   Ans    : ans * 2 ;; Uses previous result
   Block  : { x = 1; y = 2 }
-  If     : if (x == 1) { print 9 } { print 0 }
+  If     : if (x == 1) { print 9 } else { print 0 }
   While  : while (x < 5) { print x; x = x + 1 }
 
 Note: You don't need spaces around operators (e.g. 'a<5' works)

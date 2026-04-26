@@ -45,8 +45,8 @@ TEST_PATTERNS = [
     ("{ (x = 1) (y = 2) (x + y) }", "3"),
     
     # 7. Control flow: If
-    ("if (1 < 2) 100 200", "100"),
-    ("if (2 < 1) 100 200", "200"),
+    ("if (1 < 2) 100 else 200", "100"),
+    ("if (2 < 1) 100 else 200", "200"),
     
     # 8. Control flow: While
     ("{ (i = 0) (while (i < 3) (i = i + 1)) i }", "3"),
@@ -65,11 +65,11 @@ TEST_PATTERNS = [
     ("{ a = 1; { b = 2; c = 3 }; a + b + c }", "6"),
 
     # 8f. If with block branches
-    ("if (1 < 2) { 10; 20 } { 30; 40 }", "20"),
-    ("if (2 < 1) { 10; 20 } { 30; 40 }", "40"),
+    ("if (1 < 2) { 10; 20 } else { 30; 40 }", "20"),
+    ("if (2 < 1) { 10; 20 } else { 30; 40 }", "40"),
 
     # 8g. Complex combination (while + if + blocks)
-    ("{ x = 0; y = 0; while (x < 3) { x = x + 1; if (x == 2) { y = y + 10 } { y = y + 1 } }; y }", "12"),
+    ("{ x = 0; y = 0; while (x < 3) { x = x + 1; if (x == 2) { y = y + 10 } else { y = y + 1 } }; y }", "12"),
 
     # 9. Parentheses unwrapping
     ("((100))", "100"),
@@ -85,7 +85,7 @@ TEST_PATTERNS = [
     ("   10    *    2   ", "20"),
 
     # 13. Edge case: Condition boundary values
-    ("if 0 100 200", "100"), # 0 is treated as true (t) in Lisp
+    ("if 0 100 else 200", "100"), # 0 is treated as true (t) in Lisp
     ("if (2 < 1) 100", "nil"), # When there is no else clause
 
     # 14. Edge case: while loop that never executes
