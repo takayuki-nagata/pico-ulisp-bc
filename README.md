@@ -8,6 +8,7 @@ This project is primarily created for the [ClockworkPi Picocalc](https://www.clo
 - Supports C/bc-style control flow: block statements (`{ ... }`), conditionals (`if`), and loops (`while`).
 - Direct access to uLisp's built-in math functions (`sin`, `cos`, `sqrt`, etc.).
 - Includes `send_ulisp.py`, a handy Python utility to send `.lisp` files directly to your microcontroller via a serial port.
+- Includes `test_bc.py`, an automated test suite to verify the calculator's logic over a serial connection.
 
 ## Differences from standard `bc`
 While this tool mimics the feel of `bc`, it is essentially a syntactic wrapper running inside uLisp. Please note the following differences:
@@ -71,6 +72,14 @@ After uploading the code, simply run:
 ```
 
 Next time you restart the device, uLisp will automatically load the saved image, and you can invoke `(bc)` right away. (Note: You can use `(load-image)` manually if your board doesn't autoload it).
+
+### 4. Running the Tests
+An automated test suite (`test_bc.py`) is provided to verify the functionality and edge cases of `bc.lisp`. After uploading the code to your device, you can run the tests over the serial port:
+
+```bash
+python test_bc.py /dev/ttyACM0
+```
+*Note: The script automatically handles entering and exiting the `(bc)` REPL, and will attempt to recover if an error causes the REPL to crash.*
 
 ## Note
 Project code and documentation generated and assisted by Gemini.
