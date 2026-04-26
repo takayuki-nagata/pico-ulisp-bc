@@ -8,6 +8,7 @@ This project is primarily created for the [ClockworkPi Picocalc](https://www.clo
 - Supports C/bc-style statements and control flow: multiple statements separated by semicolons (`;`), block statements (`{ ... }`), conditionals (`if`), and loops (`while`).
 - Direct access to uLisp's built-in math functions (`sin`, `cos`, `sqrt`, etc.).
 - Includes built-in math and physical constants (`pi`, `e`, `phi`, `c`, `g`, `h`, `obase`).
+- Supports C-style logical operators (`&&`, `||`) with short-circuit evaluation.
 - Supports exponentiation (`**`), compound assignments (`+=`, `-=`, `*=`, `/=`, `%=`, `^=`, `**=`, `&=`, `|=`, `<<=`, `>>=`), and increment/decrement operators (`++`, `--`).
 - Supports output base switching (`obase` = 16, 8, 2, or 10) and C-style radix inputs (`0xff`, `077`, `0b11`) for hexadecimal, octal, binary, and decimal operations.
 - Supports C-style bitwise operators (`&`, `|`, `^`, `~`, `<<`, `>>`).
@@ -85,6 +86,8 @@ bc> obase = 10
 10
 bc> 0xff + 077 + 0b11
 321
+bc> 1 == 1 && 2 == 2
+t
 bc> ~1 & 2 | 3 ^ 4 << 5 >> 6
 3
 bc> quit

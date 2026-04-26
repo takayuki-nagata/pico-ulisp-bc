@@ -175,6 +175,20 @@ TEST_PATTERNS = [
     ("{ a = 5; a--; a }", "4"),
     ("++10", "11"),
     ("10++", "10"),
+    
+    # 25. Logical operations (&&, ||) and short-circuit evaluation
+    ("1 == 1 && 2 == 2", "t"),
+    ("1 == 1 && 2 == 3", "nil"),
+    ("1 == 2 || 3 == 3", "t"),
+    ("1 == 2 || 3 == 4", "nil"),
+    ("{ a = 1; 1 == 2 && (a = 2); a }", "1"),
+    ("{ a = 1; 1 == 1 && (a = 2); a }", "2"),
+    ("{ a = 1; 1 == 1 || (a = 2); a }", "1"),
+    ("{ a = 1; 1 == 2 || (a = 2); a }", "2"),
+    
+    # 26. Logical operators without spaces
+    ("1==1&&2==2", "t"),
+    ("1==0||3>1", "t"),
 ]
 
 def read_until(ser, prompt_pattern, timeout=5.0):
