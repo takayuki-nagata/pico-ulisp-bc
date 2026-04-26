@@ -1,5 +1,13 @@
 ;;; bc.lisp - A "bc" like calculator for uLisp
 
+;; Built-in Constants
+(defvar pi 3.141592653589793)
+(defvar e 2.718281828459045)
+(defvar phi 1.618033988749895)
+(defvar c 299792458)
+(defvar g 9.80665)
+(defvar h 6.62607015e-34)
+
 ;; List of supported math functions
 (defvar *math-funcs* '(sin cos tan asin acos atan exp log expt sqrt abs round max min))
 
@@ -95,6 +103,9 @@
   (terpri)
   (princ "Available Functions:") (terpri)
   (princ "  ") (princ *math-funcs*) (terpri)
+  (terpri)
+  (princ "Built-in Constants:") (terpri)
+  (princ "  pi e phi c g h") (terpri)
   (terpri)
   (princ "Syntax Examples:") (terpri)
   (princ "  Math   : (1 + 2 * 3)") (terpri)

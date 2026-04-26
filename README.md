@@ -7,6 +7,7 @@ This project is primarily created for the [ClockworkPi Picocalc](https://www.clo
 - A custom REPL for evaluating math expressions using familiar infix notation (e.g., `(1 + 2 * 3)`).
 - Supports C/bc-style control flow: block statements (`{ ... }`), conditionals (`if`), and loops (`while`).
 - Direct access to uLisp's built-in math functions (`sin`, `cos`, `sqrt`, etc.).
+- Includes built-in math and physical constants (`pi`, `e`, `phi`, `c`, `g`, `h`).
 - Includes `send_ulisp.py`, a handy Python utility to send `.lisp` files directly to your microcontroller via a serial port.
 - Includes `test_bc.py`, an automated test suite to verify the calculator's logic over a serial connection.
 
@@ -47,6 +48,9 @@ Commands:
 
 Available Functions:
   (sin cos tan asin acos atan exp log expt sqrt abs round max min)
+
+Built-in Constants:
+  pi e phi c g h
 
 Syntax Examples:
   Math   : (1 + 2 * 3)
