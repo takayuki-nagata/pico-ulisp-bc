@@ -137,6 +137,7 @@
   (princ "  If     : if (x == 1) { print 9 } else { print 0 }") (terpri)
   (princ "  While  : while (x < 5) { print x; x = x + 1 }") (terpri)
   (princ "  Base   : obase = 16 ;; Set output base to 16, 8, 2, or 10") (terpri)
+  (princ "  Radix  : 0xff + 077 + 0b11 ;; C-style hex, octal, binary input") (terpri)
   (terpri)
   (princ "Note: You don't need spaces around operators (e.g. 'a<5' works)") (terpri)
   (princ "===========================") (terpri))
@@ -240,6 +241,29 @@
                (push #\Space result))
            (push c result))
          (setq prev-char c))
+        ;; C-style radices: 0x, 0b, 0
+        ((and (eq c #\0)
+              (or (null result)
+                  (member (car result) '(#\Space #\Tab #\Newline #\+ #\- #\* #\/ #\% #\= #\< #\> #\( #\{ #\[ #\,))))
+         (let ((next-c (if (< i len) (char str i) nil)))
+           (cond
+            ((and next-c (or (eq next-c #\x) (eq next-c #\X)))
+             (push #\# result)
+             (push #\x result)
+             (incf i)
+             (setq prev-char #\x))
+            ((and next-c (or (eq next-c #\b) (eq next-c #\B)))
+             (push #\# result)
+             (push #\b result)
+             (incf i)
+             (setq prev-char #\b))
+            ((member next-c '(#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7))
+             (push #\# result)
+             (push #\o result)
+             (setq prev-char #\o))
+            (t
+             (push c result)
+             (setq prev-char c)))))
         ;; Other characters
         (t
          (unless (eq c #\Space)

@@ -123,6 +123,15 @@ TEST_PATTERNS = [
     ("-5", "-#b101"),
     ("obase = 10", "10"),
     ("255", "255"),
+
+    # 19. C-style radix inputs (Hex, Octal, Binary)
+    ("0xff", "255"),
+    ("0xFF", "255"),
+    ("077", "63"),
+    ("0b11", "3"),
+    ("0B101", "5"),
+    ("0xff + 077 + 0b11", "321"),
+    ("0x10 * 2", "32"),
 ]
 
 def read_until(ser, prompt_pattern, timeout=5.0):
