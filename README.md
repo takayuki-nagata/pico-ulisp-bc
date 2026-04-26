@@ -10,6 +10,7 @@ This project is primarily created for the [ClockworkPi Picocalc](https://www.clo
 - Includes built-in math and physical constants (`pi`, `e`, `phi`, `c`, `g`, `h`, `obase`).
 - Supports C-style logical operators (`&&`, `||`) with short-circuit evaluation.
 - Supports exponentiation (`**`), compound assignments (`+=`, `-=`, `*=`, `/=`, `%=`, `^=`, `**=`, `&=`, `|=`, `<<=`, `>>=`), and increment/decrement operators (`++`, `--`).
+- Supports user-defined functions with dynamic binding (e.g., `f(x, y) = x * y + 2`), including recursion.
 - Supports output base switching (`obase` = 16, 8, 2, or 10) and C-style radix inputs (`0xff`, `077`, `0b11`) for hexadecimal, octal, binary, and decimal operations.
 - Supports C-style bitwise operators (`&`, `|`, `^`, `~`, `<<`, `>>`).
 - Operators and variables can be typed without spaces (e.g., `1+2*3`); the REPL automatically handles padding.
@@ -19,7 +20,7 @@ This project is primarily created for the [ClockworkPi Picocalc](https://www.clo
 ## Differences from standard `bc`
 While this tool mimics the feel of `bc`, it is essentially a syntactic wrapper running inside uLisp. Please note the following differences:
 - **Precision**: Does not support arbitrary-precision arithmetic. It relies entirely on uLisp's native number types (standard integers/floats).
-- **No Custom Functions**: Currently does not support defining user functions (`define f(x) { ... }`).
+- **Custom Functions**: Supports defining user functions, but uses a simpler syntax `f(x) = ...` instead of the standard `bc` `define f(x) { ... }` syntax.
 
 ## Requirements
 - A microcontroller running uLisp.
@@ -60,6 +61,7 @@ Syntax Examples:
   Bitwise: ~1 & 2 | 3 ^ 4 << 5 >> 6
   Funcs  : sqrt (16 + 9)
   Assign : a = 10 % 3; a += 5
+  FuncDef: f(x, y) = x * y + 2
   Inc/Dec: ++a; b--
   Ans    : ans * 2 ;; Uses previous result
   Block  : { x = 1; y = 2 }
@@ -90,6 +92,11 @@ bc> 1 == 1 && 2 == 2
 t
 bc> ~1 & 2 | 3 ^ 4 << 5 >> 6
 3
+bc> fact(n) = if (n <= 1) 1 else n * fact(n - 1)
+[Function 'fact' defined]
+fact
+bc> fact(5)
+120
 bc> quit
 Bye!
 ```

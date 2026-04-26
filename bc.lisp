@@ -12,6 +12,9 @@
 ;; List of supported math functions
 (defvar *math-funcs* '(sin cos tan asin acos atan exp log expt sqrt abs round max min))
 
+;; List of user-defined functions
+(defvar *user-funcs* nil)
+
 ;; Returns a new list containing the first n elements of lst
 (defun take (n lst)
   (if (or (zerop n) (null lst))
@@ -28,6 +31,18 @@
         (setq best-op x best-idx idx))
       (incf idx))
     (if best-op (cons best-op best-idx) nil)))
+
+;; Splits a list by a specific separator symbol
+(defun split-by (lst separator)
+  (let ((res nil) (curr nil))
+    (dolist (x lst)
+      (if (eq x separator)
+          (progn 
+            (when curr (push (reverse curr) res))
+            (setq curr nil))
+        (push x curr)))
+    (when curr (push (reverse curr) res))
+    (reverse res)))
 
 ;; Returns the tail of the list after skipping the first n elements
 (defun nthcdr (n lst)
@@ -68,23 +83,23 @@
           res))))
    ;; Evaluate 'if' statements: (if condition true-branch [else false-branch])
    ((eq (car expr) 'if)
-    (let ((cond-val (calc (cadr expr)))
-          (true-branch (caddr expr))
-          (rest (cdr (cdr (cdr expr)))))
+    (let* ((cond-val (calc (cadr expr)))
+           (body-and-else (cddr expr))
+           (parts (split-by body-and-else 'else))
+           (true-branch (car parts))
+           (false-branch (cadr parts)))
       (if cond-val
           (calc true-branch)
-        (when rest
-          (if (eq (car rest) 'else)
-              (when (cdr rest) (calc (cadr rest)))
-            (calc (car rest)))))))
-   ;; Evaluate 'while' loops: (while condition body)
+        (when false-branch
+          (calc false-branch)))))
+   ;; Evaluate 'while' loops: (while condition ...)
    ((eq (car expr) 'while)
     (loop
      (unless (calc (cadr expr)) (return nil))
-     (calc (caddr expr))))
+     (calc (cddr expr))))
    ;; Evaluate 'print' statements
    ((eq (car expr) 'print)
-    (print-result (calc (cadr expr))))
+    (print-result (calc (cdr expr))))
    ;; Unwrap single-element lists (e.g., passing through extra parentheses)
    ((null (cdr expr)) (calc (car expr)))
    (t
@@ -110,24 +125,32 @@
             (cond
              ;; Variable assignment creates or updates a global variable
              ((member op '(= += -= *= /= %= ^= **= &= |= <<= >>=))
-              (let* ((var (car left))
-                     (rval (calc right))
-                     (val (if (eq op '=)
-                              rval
-                            (let ((lval (calc left)))
-                              (cond ((eq op '+=) (+ lval rval))
-                                    ((eq op '-=) (- lval rval))
-                                    ((eq op '*=) (* lval rval))
-                                    ((eq op '/=) (/ lval rval))
-                                    ((eq op '%=) (mod lval rval))
-                                    ((eq op '^=) (logxor lval rval))
-                                    ((eq op '**=) (expt lval rval))
-                                    ((eq op '&=) (logand lval rval))
-                                    ((eq op '|=) (logior lval rval))
-                                    ((eq op '<<=) (ash lval rval))
-                                    ((eq op '>>=) (ash lval (- rval))))))))
-                (eval (list 'defvar var val))
-                val))
+              (if (and (eq op '=) (listp left) (= (length left) 2) (listp (cadr left)))
+                  ;; User-defined function: f(x, y) = expr
+                  (let* ((fname (car left))
+                         (raw-args (split-by (cadr left) '_comma_))
+                         (args (mapcar (lambda (a) (car a)) raw-args)))
+                    (push (cons fname (cons args right)) *user-funcs*)
+                    (princ "[Function '") (princ fname) (princ "' defined]") (terpri)
+                    fname)
+                (let* ((var (car left))
+                       (rval (calc right))
+                       (val (if (eq op '=)
+                                rval
+                              (let ((lval (calc left)))
+                                (cond ((eq op '+=) (+ lval rval))
+                                      ((eq op '-=) (- lval rval))
+                                      ((eq op '*=) (* lval rval))
+                                      ((eq op '/=) (/ lval rval))
+                                      ((eq op '%=) (mod lval rval))
+                                      ((eq op '^=) (logxor lval rval))
+                                      ((eq op '**=) (expt lval rval))
+                                      ((eq op '&=) (logand lval rval))
+                                      ((eq op '|=) (logior lval rval))
+                                      ((eq op '<<=) (ash lval rval))
+                                      ((eq op '>>=) (ash lval (- rval))))))))
+                  (eval (list 'defvar var (list 'quote val)))
+                  val)))
              ;; Logical operations (with short-circuit evaluation)
              ((eq op '_lor_)  (or (calc left) (calc right)))
              ((eq op '_land_) (and (calc left) (calc right)))
@@ -148,6 +171,27 @@
          ;; Evaluate standard math functions
          ((member (car expr) *math-funcs*)
           (eval (cons (car expr) (mapcar 'calc (cdr expr)))))
+         ;; Evaluate user-defined functions
+         ((and (boundp '*user-funcs*) (assoc (car expr) *user-funcs*))
+          (let* ((ufunc (assoc (car expr) *user-funcs*))
+                 (args (cadr ufunc))
+                 (body (cddr ufunc))
+                 (arg-exprs (if (listp (cadr expr)) 
+                                (split-by (cadr expr) '_comma_)
+                              (list (cdr expr))))
+                 (arg-vals (mapcar 'calc arg-exprs))
+                 (old-vals (mapcar (lambda (a) (if (boundp a) (list (eval a)) nil)) args))
+                 (res nil))
+            ;; Bind arguments
+            (mapc (lambda (a v) (eval (list 'defvar a (list 'quote v)))) args arg-vals)
+            ;; Evaluate body
+            (setq res (calc body))
+            ;; Restore previous values
+            (mapc (lambda (a ov) (if ov (eval (list 'defvar a (list 'quote (car ov)))) (makunbound a))) args old-vals)
+            res))
+         ;; Unary minus
+         ((eq (car expr) '_minus_)
+          (- (calc (cdr expr))))
          ;; Bitwise NOT
          ((eq (car expr) '_not_)
           (lognot (calc (cdr expr))))
@@ -158,7 +202,7 @@
                               (if (boundp var) (eval var) 0)
                             (calc var)))
                  (val (if (eq (car expr) '++) (1+ old-val) (1- old-val))))
-            (when (symbolp var) (eval (list 'defvar var val)))
+            (when (symbolp var) (eval (list 'defvar var (list 'quote val))))
             val))
          ;; Postfix ++/--
          ((and (cdr expr) (member (cadr expr) '(++ --)))
@@ -167,7 +211,7 @@
                               (if (boundp var) (eval var) 0)
                             (calc var)))
                  (val (if (eq (cadr expr) '++) (1+ old-val) (1- old-val))))
-            (when (symbolp var) (eval (list 'defvar var val)))
+            (when (symbolp var) (eval (list 'defvar var (list 'quote val))))
             old-val))
          (t (calc (car expr)))))))))
 
@@ -189,6 +233,7 @@
   (princ "  Bitwise: ~1 & 2 | 3 ^ 4 << 5 >> 6") (terpri)
   (princ "  Funcs  : sqrt (16 + 9)") (terpri)
   (princ "  Assign : a = 10 % 3; a += 5") (terpri)
+  (princ "  FuncDef: f(x, y) = x * y + 2") (terpri)
   (princ "  Inc/Dec: ++a; b--") (terpri)
   (princ "  Ans    : ans * 2 ;; Uses previous result") (terpri)
   (princ "  Block  : { x = 1; y = 2 }") (terpri)
@@ -384,25 +429,47 @@
          (push #\_ result)
          (push #\Space result)
          (setq prev-char c))
+        ;; Comma
+        ((eq c #\,)
+         (push #\Space result)
+         (push #\_ result)
+         (push #\c result)
+         (push #\o result)
+         (push #\m result)
+         (push #\m result)
+         (push #\a result)
+         (push #\_ result)
+         (push #\Space result)
+         (setq prev-char c))
         ;; Minus sign
         ((eq c #\-)
-         (if (and (not (member prev-char '(#\Space #\+ #\- #\* #\/ #\% #\= #\< #\> #\{ #\( #\| #\& #\^ #\~)))
-                  ;; Exclude exponential notation like 1e-5
-                  (not (let ((temp result)
-                             (is-exp nil))
+         (let ((is-exp (let ((temp result) (is-e nil))
                          (loop
                           (unless (and temp (eq (car temp) #\Space)) (return))
                           (setq temp (cdr temp)))
                          (when (and temp (or (eq (car temp) #\e) (eq (car temp) #\E)))
                            (setq temp (cdr temp))
-                           (when (and temp (not (member (car temp) '(#\Space #\+ #\- #\* #\/ #\% #\= #\< #\> #\{ #\} #\( #\) #\| #\& #\^ #\~))))
-                             (setq is-exp t)))
-                         is-exp)))
-             (progn
-               (push #\Space result)
-               (push c result)
-               (push #\Space result))
-           (push c result))
+                           (when (and temp (not (member (car temp) '(#\Space #\+ #\- #\* #\/ #\% #\= #\< #\> #\{ #\} #\( #\) #\| #\& #\^ #\~ #\; #\,))))
+                             (setq is-e t)))
+                         is-e))
+               (is-binary (not (member prev-char '(#\Space #\+ #\- #\* #\/ #\% #\= #\< #\> #\{ #\( #\| #\& #\^ #\~ #\; #\,)))))
+           (cond
+            (is-exp
+             (push c result))
+            (is-binary
+             (push #\Space result)
+             (push c result)
+             (push #\Space result))
+            (t
+             (push #\Space result)
+             (push #\_ result)
+             (push #\m result)
+             (push #\i result)
+             (push #\n result)
+             (push #\u result)
+             (push #\s result)
+             (push #\_ result)
+             (push #\Space result))))
          (setq prev-char c))
         ;; C-style radices: 0x, 0b, 0
         ((and (eq c #\0)
@@ -453,6 +520,6 @@
       ((null input) nil)
       (t
        (let ((result (calc input)))
-         (eval (list 'defvar 'ans result))
+         (eval (list 'defvar 'ans (list 'quote result)))
          (print-result result)
          (terpri)))))))

@@ -189,6 +189,30 @@ TEST_PATTERNS = [
     # 26. Logical operators without spaces
     ("1==1&&2==2", "t"),
     ("1==0||3>1", "t"),
+    
+    # 27. User-defined functions
+    ("f(x) = x * 2", "f"),
+    ("f(10)", "20"),
+    ("add(x, y) = x + y", "add"),
+    ("add(3, 4)", "7"),
+    ("x = 100", "100"),
+    ("mask(x) = x * 3", "mask"),
+    ("mask(10)", "30"),
+    ("x", "100"),
+    
+    # 28. Advanced user-defined functions (Blocks, Conditionals, Calling other functions, Recursion)
+    ("f2(x, y) = { a = x * 2; b = y * 3; a + b }", "f2"),
+    ("f2(10, 20)", "80"),
+    ("my_abs(x) = if (x < 0) { -x } else { x }", "my_abs"),
+    ("my_abs(-42)", "42"),
+    ("my_abs(42)", "42"),
+    ("square(x) = x * x", "square"),
+    ("sum_of_squares(x, y) = square(x) + square(y)", "sum_of_squares"),
+    ("sum_of_squares(3, 4)", "25"),
+    ("fact(n) = if (n <= 1) 1 else n * fact(n - 1)", "fact"),
+    ("fact(5)", "120"),
+    ("fib(n) = if (n <= 1) n else fib(n - 1) + fib(n - 2)", "fib"),
+    ("fib(10)", "55"),
 ]
 
 def read_until(ser, prompt_pattern, timeout=5.0):
