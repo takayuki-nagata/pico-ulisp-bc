@@ -132,6 +132,21 @@ TEST_PATTERNS = [
     ("0B101", "5"),
     ("0xff + 077 + 0b11", "321"),
     ("0x10 * 2", "32"),
+
+    # 20. Bitwise operations
+    ("1 | 2", "3"),
+    ("3 & 5", "1"),
+    ("3 ^ 5", "6"),
+    ("~1", "-2"),
+    ("1 << 2", "4"),
+    ("8 >> 2", "2"),
+    
+    # 21. Bitwise operator precedence
+    ("1 | 2 & 3", "3"),
+    ("1 << 2 + 3", "32"),
+    ("10 & 15 ^ 3", "9"),
+    ("~1 & 2 | 3 ^ 4 << 5 >> 6", "3"),
+    ("~1&2|3^4<<5>>6", "3"),
 ]
 
 def read_until(ser, prompt_pattern, timeout=5.0):
@@ -172,10 +187,10 @@ def run_tests(port, baudrate):
                 ser.write((expr + '\n').encode('utf-8'))
                 
                 # Read until the next prompt (bc prompt or uLisp standard numeric prompt)
-                resp = read_until(ser, r'(bc>|\d+>)')
+                resp = read_until(ser, r'(bc>|\n\d+>)')
                 
                 # Remove unnecessary prompt strings and split into lines
-                clean_resp = re.sub(r'(bc>|\d+>)', '', resp).strip()
+                clean_resp = re.sub(r'(bc>|\n\d+>)', '', resp).strip()
                 lines = [line.strip() for line in clean_resp.split('\n') if line.strip()]
                 
                 # Check if the expected value is in the lines, considering Lisp echo back or warning messages

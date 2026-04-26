@@ -9,6 +9,7 @@ This project is primarily created for the [ClockworkPi Picocalc](https://www.clo
 - Direct access to uLisp's built-in math functions (`sin`, `cos`, `sqrt`, etc.).
 - Includes built-in math and physical constants (`pi`, `e`, `phi`, `c`, `g`, `h`, `obase`).
 - Supports output base switching (`obase` = 16, 8, 2, or 10) and C-style radix inputs (`0xff`, `077`, `0b11`) for hexadecimal, octal, binary, and decimal operations.
+- Supports C-style bitwise operators (`&`, `|`, `^`, `~`, `<<`, `>>`).
 - Operators and variables can be typed without spaces (e.g., `1+2*3`); the REPL automatically handles padding.
 - Includes `send_ulisp.py`, a handy Python utility to send `.lisp` files directly to your microcontroller via a serial port.
 - Includes `test_bc.py`, an automated test suite to verify the calculator's logic over a serial connection.
@@ -54,6 +55,7 @@ Built-in Constants:
 
 Syntax Examples:
   Math   : 1 + 2 * 3
+  Bitwise: ~1 & 2 | 3 ^ 4 << 5 >> 6
   Funcs  : sqrt (16 + 9)
   Assign : a = 10 % 3
   Ans    : ans * 2 ;; Uses previous result
@@ -81,6 +83,8 @@ bc> obase = 10
 10
 bc> 0xff + 077 + 0b11
 321
+bc> ~1 & 2 | 3 ^ 4 << 5 >> 6
+3
 bc> quit
 Bye!
 ```
