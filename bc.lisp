@@ -7,6 +7,7 @@
 (defvar c 299792458)
 (defvar g 9.80665)
 (defvar h 6.62607015e-34)
+(defvar obase 10)
 
 ;; List of supported math functions
 (defvar *math-funcs* '(sin cos tan asin acos atan exp log expt sqrt abs round max min))
@@ -83,7 +84,7 @@
      (calc (caddr expr))))
    ;; Evaluate 'print' statements
    ((eq (car expr) 'print)
-    (print (calc (cadr expr))))
+    (print-result (calc (cadr expr))))
    ;; Evaluate standard math functions
    ((member (car expr) *math-funcs*)
     (eval (cons (car expr) (mapcar 'calc (cdr expr)))))
@@ -125,7 +126,7 @@
   (princ "  ") (princ *math-funcs*) (terpri)
   (terpri)
   (princ "Built-in Constants:") (terpri)
-  (princ "  pi e phi c g h") (terpri)
+  (princ "  pi e phi c g h obase") (terpri)
   (terpri)
   (princ "Syntax Examples:") (terpri)
   (princ "  Math   : 1 + 2 * 3") (terpri)
@@ -135,9 +136,37 @@
   (princ "  Block  : { x = 1; y = 2 }") (terpri)
   (princ "  If     : if (x == 1) { print 9 } else { print 0 }") (terpri)
   (princ "  While  : while (x < 5) { print x; x = x + 1 }") (terpri)
+  (princ "  Base   : obase = 16 ;; Set output base to 16, 8, 2, or 10") (terpri)
   (terpri)
   (princ "Note: You don't need spaces around operators (e.g. 'a<5' works)") (terpri)
   (princ "===========================") (terpri))
+
+;; Prints the result in the base specified by the global variable 'obase'
+(defun print-result (n)
+  (let* ((raw-base (if (boundp 'obase) (eval 'obase) 10))
+         (base (if (integerp raw-base) raw-base 10)))
+    (cond
+     ((or (not (integerp n)) (< base 2) (= base 10))
+      (print n))
+     (t
+      (terpri)
+      (let ((abs-n (abs n)))
+        (when (< n 0) (princ "-"))
+        (princ (cond ((= base 16) "#x")
+                     ((= base 8)  "#o")
+                     ((= base 2)  "#b")
+                     (t           "")))
+        (let ((res nil))
+          (if (= abs-n 0)
+              (push 0 res)
+            (loop
+             (unless (> abs-n 0) (return))
+             (push (mod abs-n base) res)
+             (setq abs-n (truncate abs-n base))))
+          (dolist (d res)
+            (princ (if (< d 10) d (code-char (+ 55 d))))))
+        (princ " ")
+        n)))))
 
 ;; Adds spaces around operators and parentheses to allow input without spaces
 (defun pad-operators (str)
@@ -238,5 +267,5 @@
       (t
        (let ((result (calc input)))
          (eval (list 'defvar 'ans result))
-         (print result)
+         (print-result result)
          (terpri)))))))

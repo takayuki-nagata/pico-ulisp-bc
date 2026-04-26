@@ -112,6 +112,17 @@ TEST_PATTERNS = [
     ("{(x=1)(y=2)(x+y)}", "3"),
     ("-5+3", "-2"),
     ("10*-5", "-50"),
+
+    # 18. Output base (obase) switching
+    ("obase = 16", "#x10"),
+    ("255", "#xFF"),
+    ("obase = 8", "#o10"),
+    ("255", "#o377"),
+    ("obase = 2", "#b10"),
+    ("255", "#b11111111"),
+    ("-5", "-#b101"),
+    ("obase = 10", "10"),
+    ("255", "255"),
 ]
 
 def read_until(ser, prompt_pattern, timeout=5.0):

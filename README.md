@@ -7,7 +7,8 @@ This project is primarily created for the [ClockworkPi Picocalc](https://www.clo
 - A custom REPL for evaluating math expressions using familiar infix notation (e.g., `1 + 2 * 3`).
 - Supports C/bc-style statements and control flow: multiple statements separated by semicolons (`;`), block statements (`{ ... }`), conditionals (`if`), and loops (`while`).
 - Direct access to uLisp's built-in math functions (`sin`, `cos`, `sqrt`, etc.).
-- Includes built-in math and physical constants (`pi`, `e`, `phi`, `c`, `g`, `h`).
+- Includes built-in math and physical constants (`pi`, `e`, `phi`, `c`, `g`, `h`, `obase`).
+- Supports output base switching (`obase` = 16, 8, 2, or 10) to format results in hexadecimal, octal, binary, or decimal.
 - Operators and variables can be typed without spaces (e.g., `1+2*3`); the REPL automatically handles padding.
 - Includes `send_ulisp.py`, a handy Python utility to send `.lisp` files directly to your microcontroller via a serial port.
 - Includes `test_bc.py`, an automated test suite to verify the calculator's logic over a serial connection.
@@ -49,7 +50,7 @@ Available Functions:
   (sin cos tan asin acos atan exp log expt sqrt abs round max min)
 
 Built-in Constants:
-  pi e phi c g h
+  pi e phi c g h obase
 
 Syntax Examples:
   Math   : 1 + 2 * 3
@@ -59,6 +60,7 @@ Syntax Examples:
   Block  : { x = 1; y = 2 }
   If     : if (x == 1) { print 9 } else { print 0 }
   While  : while (x < 5) { print x; x = x + 1 }
+  Base   : obase = 16 ;; Set output base to 16, 8, 2, or 10
 
 Note: You don't need spaces around operators (e.g. 'a<5' works)
 ===========================
@@ -70,6 +72,12 @@ bc> if (1 < 2) { print 100 }
 100
 bc> x = 10; y = 20; x + y
 30
+bc> obase = 16
+#x10
+bc> 255
+#xFF
+bc> obase = 10
+10
 bc> quit
 Bye!
 ```
