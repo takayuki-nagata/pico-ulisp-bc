@@ -5,7 +5,7 @@ This project is primarily created for the [ClockworkPi Picocalc](https://www.clo
 
 ## Features
 - A custom REPL for evaluating math expressions using familiar infix notation (e.g., `1 + 2 * 3`).
-- Supports C/bc-style control flow: block statements (`{ ... }`), conditionals (`if`), and loops (`while`).
+- Supports C/bc-style statements and control flow: multiple statements separated by semicolons (`;`), block statements (`{ ... }`), conditionals (`if`), and loops (`while`).
 - Direct access to uLisp's built-in math functions (`sin`, `cos`, `sqrt`, etc.).
 - Includes built-in math and physical constants (`pi`, `e`, `phi`, `c`, `g`, `h`).
 - Operators and variables can be typed without spaces (e.g., `1+2*3`); the REPL automatically handles padding.
@@ -56,9 +56,9 @@ Syntax Examples:
   Funcs  : sqrt (16 + 9)
   Assign : a = 10 % 3
   Ans    : ans * 2 ;; Uses previous result
-  Block  : { (x = 1) (y = 2) }
-  If     : if (x == 1) (print 9) (print 0)
-  While  : while (x < 5) ( { (print x) (x = x + 1) } )
+  Block  : { x = 1; y = 2 }
+  If     : if (x == 1) { print 9 } { print 0 }
+  While  : while (x < 5) { print x; x = x + 1 }
 
 Note: You don't need spaces around operators (e.g. 'a<5' works)
 ===========================
@@ -66,8 +66,10 @@ bc> 10 + 20
 30
 bc> ans * 2
 60
-bc> if (1 < 2) (print 100)
+bc> if (1 < 2) { print 100 }
 100
+bc> x = 10; y = 20; x + y
+30
 bc> quit
 Bye!
 ```

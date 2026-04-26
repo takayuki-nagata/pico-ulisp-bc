@@ -51,6 +51,26 @@ TEST_PATTERNS = [
     # 8. Control flow: While
     ("{ (i = 0) (while (i < 3) (i = i + 1)) i }", "3"),
     
+    # 8b. Control flow with Semicolon
+    ("{ i = 0; while (i < 3) { i = i + 1 }; i }", "3"),
+
+    # 8c. Multiple statements separated by semicolon
+    ("print 9; print 0", "0"),
+
+    # 8d. Semicolon edge cases (trailing, consecutive)
+    ("100;", "100"),
+    ("10;;20", "20"),
+    
+    # 8e. Nested blocks
+    ("{ a = 1; { b = 2; c = 3 }; a + b + c }", "6"),
+
+    # 8f. If with block branches
+    ("if (1 < 2) { 10; 20 } { 30; 40 }", "20"),
+    ("if (2 < 1) { 10; 20 } { 30; 40 }", "40"),
+
+    # 8g. Complex combination (while + if + blocks)
+    ("{ x = 0; y = 0; while (x < 3) { x = x + 1; if (x == 2) { y = y + 10 } { y = y + 1 } }; y }", "12"),
+
     # 9. Parentheses unwrapping
     ("((100))", "100"),
 
