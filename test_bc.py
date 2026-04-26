@@ -73,6 +73,10 @@ TEST_PATTERNS = [
 
     # 15. Edge case: Empty block (adjust expected value according to implementation)
     ("({ })", "nil"),
+
+    # 16. Ans feature: Uses previous result
+    ("(10 + 20)", "30"),
+    ("(ans * 2)", "60"),
 ]
 
 def read_until(ser, prompt_pattern, timeout=5.0):

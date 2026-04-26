@@ -52,12 +52,17 @@ Syntax Examples:
   Math   : (1 + 2 * 3)
   Funcs  : (sqrt (16 + 9))
   Assign : (a = 10 % 3)
+  Ans    : (ans * 2) ;; Uses previous result
   Block  : ( { (x = 1) (y = 2) } )
   If     : (if (x == 1) (print 9) (print 0))
   While  : (while (x < 5) ( { (print x) (x = x + 1) } ))
 
 Note: ALWAYS use spaces around operators! (e.g. 'a < 5')
 ===========================
+bc> (10 + 20)
+30
+bc> (ans * 2)
+60
 bc> (if (1 < 2) (print 100))
 100
 bc> quit

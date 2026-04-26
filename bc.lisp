@@ -100,6 +100,7 @@
   (princ "  Math   : (1 + 2 * 3)") (terpri)
   (princ "  Funcs  : (sqrt (16 + 9))") (terpri)
   (princ "  Assign : (a = 10 % 3)") (terpri)
+  (princ "  Ans    : (ans * 2) ;; Uses previous result") (terpri)
   (princ "  Block  : ( { (x = 1) (y = 2) } )") (terpri)
   (princ "  If     : (if (x == 1) (print 9) (print 0))") (terpri)
   (princ "  While  : (while (x < 5) ( { (print x) (x = x + 1) } ))") (terpri)
@@ -120,5 +121,7 @@
       ((eq input 'help)
        (show-help))
       (t
-       (print (calc input))
-       (terpri))))))
+       (let ((result (calc input)))
+         (eval (list 'defvar 'ans result))
+         (print result)
+         (terpri)))))))
