@@ -116,15 +116,72 @@
   (princ "  If     : if (x == 1) (print 9) (print 0)") (terpri)
   (princ "  While  : while (x < 5) ( { (print x) (x = x + 1) } )") (terpri)
   (terpri)
-  (princ "Note: ALWAYS use spaces around operators! (e.g. 'a < 5')") (terpri)
+  (princ "Note: You don't need spaces around operators (e.g. 'a<5' works)") (terpri)
   (princ "===========================") (terpri))
+
+;; Adds spaces around operators and parentheses to allow input without spaces
+(defun pad-operators (str)
+  (let ((len (length str))
+        (i 0)
+        (result nil)
+        (prev-char #\Space))
+    (loop
+     (unless (< i len) (return))
+     (let ((c (char str i)))
+       (incf i)
+       (cond
+        ;; Two-character operators (==, !=, <=, >=)
+        ((and (member c '(#\= #\! #\< #\>))
+              (< i len)
+              (eq (char str i) #\=))
+         (push #\Space result)
+         (push c result)
+         (push (char str i) result)
+         (push #\Space result)
+         (incf i)
+         (setq prev-char #\=))
+        ;; Single-character operators (except minus)
+        ((member c '(#\+ #\* #\/ #\% #\= #\< #\> #\{ #\} #\( #\)))
+         (push #\Space result)
+         (push c result)
+         (push #\Space result)
+         (setq prev-char c))
+        ;; Minus sign
+        ((eq c #\-)
+         (if (and (not (member prev-char '(#\Space #\+ #\- #\* #\/ #\% #\= #\< #\> #\{ #\( )))
+                  ;; Exclude exponential notation like 1e-5
+                  (not (let ((temp result)
+                             (is-exp nil))
+                         (loop
+                          (unless (and temp (eq (car temp) #\Space)) (return))
+                          (setq temp (cdr temp)))
+                         (when (and temp (or (eq (car temp) #\e) (eq (car temp) #\E)))
+                           (setq temp (cdr temp))
+                           (when (and temp (not (member (car temp) '(#\Space #\+ #\- #\* #\/ #\% #\= #\< #\> #\{ #\} #\( #\) ))))
+                             (setq is-exp t)))
+                         is-exp)))
+             (progn
+               (push #\Space result)
+               (push c result)
+               (push #\Space result))
+           (push c result))
+         (setq prev-char c))
+        ;; Other characters
+        (t
+         (unless (eq c #\Space)
+           (setq prev-char c))
+         (push c result)))))
+    (let ((final-str ""))
+      (dolist (ch (reverse result))
+        (setq final-str (concatenate 'string final-str (string ch))))
+      final-str)))
 
 ;; The main Read-Eval-Print Loop (REPL) for the calculator
 (defun bc ()
   (loop
    (princ "bc> ")
    (let* ((line (read-line))
-          (input (read-from-string (concatenate 'string "(" line ")"))))
+          (input (read-from-string (concatenate 'string "(" (pad-operators line) ")"))))
      (cond
       ((or (equal input '(quit)) (equal input '((quit))))
        (princ "Bye!")

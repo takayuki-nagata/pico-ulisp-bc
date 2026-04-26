@@ -77,6 +77,21 @@ TEST_PATTERNS = [
     # 16. Ans feature: Uses previous result
     ("10 + 20", "30"),
     ("ans * 2", "60"),
+
+    # 17. No spaces around operators (New feature)
+    ("1+2", "3"),
+    ("1+2*3", "7"),
+    ("10-3", "7"),
+    ("10/2", "5"),
+    ("10%3", "1"),
+    ("b=10", "10"),
+    ("b+5", "15"),
+    ("5==5", "t"),
+    ("3<4", "t"),
+    ("if(1<2)100", "100"),
+    ("{(x=1)(y=2)(x+y)}", "3"),
+    ("-5+3", "-2"),
+    ("10*-5", "-50"),
 ]
 
 def read_until(ser, prompt_pattern, timeout=5.0):
