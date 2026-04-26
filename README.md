@@ -8,6 +8,7 @@ This project is primarily created for the [ClockworkPi Picocalc](https://www.clo
 - Supports C/bc-style statements and control flow: multiple statements separated by semicolons (`;`), block statements (`{ ... }`), conditionals (`if`), and loops (`while`).
 - Direct access to uLisp's built-in math functions (`sin`, `cos`, `sqrt`, etc.).
 - Includes built-in math and physical constants (`pi`, `e`, `phi`, `c`, `g`, `h`, `obase`).
+- Supports exponentiation (`**`), compound assignments (`+=`, `-=`, `*=`, `/=`, `%=`, `^=`, `**=`, `&=`, `|=`, `<<=`, `>>=`), and increment/decrement operators (`++`, `--`).
 - Supports output base switching (`obase` = 16, 8, 2, or 10) and C-style radix inputs (`0xff`, `077`, `0b11`) for hexadecimal, octal, binary, and decimal operations.
 - Supports C-style bitwise operators (`&`, `|`, `^`, `~`, `<<`, `>>`).
 - Operators and variables can be typed without spaces (e.g., `1+2*3`); the REPL automatically handles padding.
@@ -54,10 +55,11 @@ Built-in Constants:
   pi e phi c g h obase
 
 Syntax Examples:
-  Math   : 1 + 2 * 3
+  Math   : 1 + 2 * 3 ** 4
   Bitwise: ~1 & 2 | 3 ^ 4 << 5 >> 6
   Funcs  : sqrt (16 + 9)
-  Assign : a = 10 % 3
+  Assign : a = 10 % 3; a += 5
+  Inc/Dec: ++a; b--
   Ans    : ans * 2 ;; Uses previous result
   Block  : { x = 1; y = 2 }
   If     : if (x == 1) { print 9 } else { print 0 }
